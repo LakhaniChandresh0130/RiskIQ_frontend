@@ -1,0 +1,39 @@
+:root{--ink:#1c2733;--mut:#64748b;--line:#d8dee6;--bg:#eef1f5;--panel:#fff;--side:#14212e;--acc:#0f766e;--ok:#15803d;--warn:#b45309;--crit:#b91c1c}
+*{box-sizing:border-box}body{margin:0;font:13px/1.45 "IBM Plex Sans","Segoe UI",system-ui,sans-serif;color:var(--ink);background:var(--bg)}
+.app{display:grid;grid-template-columns:210px 1fr;min-height:100vh}
+aside{background:var(--side);color:#c5d0db;padding:14px 0}
+aside h1{font-size:17px;margin:0 16px 18px;color:#fff;font-weight:600}
+aside button{display:flex;justify-content:space-between;width:100%;border:0;background:none;color:inherit;padding:9px 16px;font:inherit;text-align:left;cursor:pointer;border-left:3px solid transparent}
+aside button:hover{background:#1d3042}aside button.on{background:#1d3042;color:#fff;border-left-color:#2dd4bf}
+aside button:focus-visible,.tabs button:focus-visible,.btn:focus-visible{outline:2px solid #2dd4bf;outline-offset:-2px}
+.badge{background:var(--crit);color:#fff;border-radius:9px;padding:0 7px;font-size:11px}
+header{display:flex;justify-content:space-between;align-items:center;background:var(--panel);border-bottom:1px solid var(--line);padding:10px 20px}
+header b{font-size:15px}header span{color:var(--mut);margin-left:14px}
+section{padding:16px 20px;display:grid;gap:14px}
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--acc);padding:10px 12px}
+.kpi.warn{border-top-color:var(--warn)}.kpi.crit{border-top-color:var(--crit)}
+.kpi small{color:var(--mut)}.kpi div{font-size:20px;font-weight:600;margin:2px 0}
+.grid2{display:grid;grid-template-columns:2fr 1fr;gap:12px}
+.card{background:var(--panel);border:1px solid var(--line)}
+.card>h3{margin:0;padding:8px 12px;font-size:13px;border-bottom:1px solid var(--line);background:#f7f9fb}
+.card>div{padding:10px 12px}
+table{width:100%;border-collapse:collapse}th,td{padding:5px 8px;border-bottom:1px solid #e8ecf1;text-align:left}
+th{background:#f7f9fb;font-weight:600;color:#334155}td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+tr:hover td{background:#f4f8f8}
+.tag{padding:1px 8px;border-radius:3px;font-size:11px;color:#fff}.tag.critical,.tag.red{background:var(--crit)}.tag.warning,.tag.yellow{background:var(--warn)}.tag.green{background:var(--ok)}
+.tabs{display:flex;gap:4px}.tabs button{border:1px solid var(--line);background:#fff;padding:5px 12px;cursor:pointer;font:inherit}.tabs button.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+.btn{background:var(--acc);color:#fff;border:0;padding:7px 14px;cursor:pointer;font:inherit}
+.form{display:grid;grid-template-columns:repeat(5,1fr) auto;gap:10px;align-items:end}
+.form label{display:grid;gap:3px;color:var(--mut)}.form input,.chat input{padding:6px;border:1px solid var(--line);font:inherit}
+.alert{border-left:4px solid var(--warn);padding:8px 12px;margin-bottom:8px;background:#fffbf3}.alert.critical{border-color:var(--crit);background:#fff5f5}
+.chat{display:grid;gap:8px}.msg{padding:8px 12px;max-width:80%;border:1px solid var(--line);background:#fff}.msg.u{justify-self:end;background:#e6f4f2}
+.msg small{display:block;color:var(--mut);margin-top:4px}.chat form{display:flex;gap:8px}.chat input{flex:1}
+.neg{color:var(--crit)}
+@media(max-width:900px){.app{grid-template-columns:1fr}aside{display:flex;overflow:auto;padding:0}aside h1{display:none}.kpis,.grid2,.form{grid-template-columns:1fr}}
+select{margin-left:14px;padding:4px 6px;border:1px solid var(--line);font:inherit;background:#fff}
+.search{width:260px;padding:6px;border:1px solid var(--line);font:inherit;margin-bottom:8px}
+.pager{display:flex;gap:12px;align-items:center;justify-content:flex-end;margin-top:8px}.pager .btn:disabled{opacity:.4;cursor:default}
+.form2{display:flex;gap:10px;align-items:end;flex-wrap:wrap}.form2 label:not(.btn){display:grid;gap:3px;color:var(--mut)}.form2 input[type=text],.form2 input:not([type]){padding:6px;border:1px solid var(--line);font:inherit;min-width:240px}
+.btn.alt{background:#fff;color:var(--ink);border:1px solid var(--line);margin-left:6px;text-decoration:none;display:inline-block}.btn.file{cursor:pointer;display:inline-block}
+.hint{color:var(--mut);margin:10px 0 0}.okmsg{color:var(--ok)}

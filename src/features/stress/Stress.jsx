@@ -25,15 +25,21 @@ export default function Stress({ s, pid }) {
   return <>
     <Card title="Scenario library — portfolio P&L under each shock" d={.05} pad={false}>
       <div className="chartbox"><ResponsiveContainer width="100%" height={230}>
-        <BarChart data={stress} margin={{ left: 8 }}>
-          <CartesianGrid stroke="rgba(120,160,200,.08)" vertical={false} />
-          <XAxis dataKey="name" tick={{ fill: '#8598b3', fontSize: 11 }} interval={0} axisLine={false} tickLine={false} />
-          <YAxis tickFormatter={x => (x * 100).toFixed(0) + '%'} tick={{ fill: '#8598b3', fontSize: 11 }} axisLine={false} tickLine={false} />
-          <Tooltip {...tip} formatter={x => pc(x)} cursor={{ fill: 'rgba(248,113,113,.06)' }} />
-          <Bar dataKey="pct" radius={[4, 4, 0, 0]}>
-            {stress.map(x => <Cell key={x.name} fill={x.pct < -.15 ? '#ef4444' : '#f59e0b'} />)}
-          </Bar>
-        </BarChart>
+        {stress.length > 0 ? (
+          <BarChart data={stress} margin={{ left: 8 }}>
+            <CartesianGrid stroke="rgba(120,160,200,.08)" vertical={false} />
+            <XAxis dataKey="name" tick={{ fill: '#8598b3', fontSize: 11 }} interval={0} axisLine={false} tickLine={false} />
+            <YAxis tickFormatter={x => (x * 100).toFixed(0) + '%'} tick={{ fill: '#8598b3', fontSize: 11 }} axisLine={false} tickLine={false} />
+            <Tooltip {...tip} formatter={x => pc(x)} cursor={{ fill: 'rgba(248,113,113,.06)' }} />
+            <Bar dataKey="pct" radius={[4, 4, 0, 0]}>
+              {stress.map(x => <Cell key={x.name} fill={x.pct < -.15 ? '#ef4444' : '#f59e0b'} />)}
+            </Bar>
+          </BarChart>
+        ) : (
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#8598b3' }}>
+            Loading data...
+          </div>
+        )}
       </ResponsiveContainer></div>
       <div className="card-b"><div className="tbl">
         <table><thead><tr><th>Scenario</th><th className="n">P&L</th><th className="n">% of exposure</th><th>Largest losses</th></tr></thead><tbody>

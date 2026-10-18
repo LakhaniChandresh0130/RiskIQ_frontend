@@ -36,12 +36,18 @@ function Dashboard({ s }) {
     <div className="grid2">
       <Card title="1-day 99% VaR, last 120 trading days">
         <ResponsiveContainer width="100%" height={260}>
-          <LineChart data={s.var_series || []}><CartesianGrid stroke="#e8ecf1" /><XAxis dataKey="date" tick={{ fontSize: 11 }} minTickGap={40} />
-            <YAxis tickFormatter={x => (x / 1e7).toFixed(1)} tick={{ fontSize: 11 }} unit=" cr" width={60} />
-            <Tooltip formatter={x => cr(x)} />
-            {s.limits?.warn && s.nav && <ReferenceLine y={s.limits.warn * s.nav} stroke="#b45309" strokeDasharray="4 3" label={{ value: 'warning', fontSize: 11, fill: '#b45309' }} />}
-            {s.limits?.crit && s.nav && <ReferenceLine y={s.limits.crit * s.nav} stroke="#b91c1c" strokeDasharray="4 3" label={{ value: 'critical', fontSize: 11, fill: '#b91c1c' }} />}
-            <Line dataKey="var" stroke="#0f766e" dot={false} strokeWidth={2} /></LineChart>
+          {s.var_series && s.var_series.length > 0 ? (
+            <LineChart data={s.var_series}><CartesianGrid stroke="#e8ecf1" /><XAxis dataKey="date" tick={{ fontSize: 11 }} minTickGap={40} />
+              <YAxis tickFormatter={x => (x / 1e7).toFixed(1)} tick={{ fontSize: 11 }} unit=" cr" width={60} />
+              <Tooltip formatter={x => cr(x)} />
+              {s.limits?.warn && s.nav && <ReferenceLine y={s.limits.warn * s.nav} stroke="#b45309" strokeDasharray="4 3" label={{ value: 'warning', fontSize: 11, fill: '#b45309' }} />}
+              {s.limits?.crit && s.nav && <ReferenceLine y={s.limits.crit * s.nav} stroke="#b91c1c" strokeDasharray="4 3" label={{ value: 'critical', fontSize: 11, fill: '#b91c1c' }} />}
+              <Line dataKey="var" stroke="#0f766e" dot={false} strokeWidth={2} /></LineChart>
+          ) : (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#8598b3' }}>
+              Loading chart data...
+            </div>
+          )}
         </ResponsiveContainer>
       </Card>
       <div style={{ display: 'grid', gap: 12, alignContent: 'start' }}>
@@ -64,8 +70,14 @@ function Drivers({ s }) {
   return <Card title="Risk drivers (component VaR, 99%)">
     <div className="tabs" style={{ marginBottom: 10 }}>{['position', 'sector', 'asset_class', 'currency'].map(k => <button key={k} className={lv === k ? 'on' : ''} onClick={() => setLv(k)}>{k.replace('_', ' ')}</button>)}</div>
     <ResponsiveContainer width="100%" height={Math.max(160, d.length * 30)}>
-      <BarChart data={d} layout="vertical" margin={{ left: 30 }}><CartesianGrid stroke="#e8ecf1" /><XAxis type="number" tickFormatter={x => (x * 100).toFixed(0) + '%'} /><YAxis type="category" dataKey="key" width={90} />
-        <Tooltip formatter={x => pc(x)} /><Bar dataKey="pct" fill="#0f766e" /></BarChart>
+      {d.length > 0 ? (
+        <BarChart data={d} layout="vertical" margin={{ left: 30 }}><CartesianGrid stroke="#e8ecf1" /><XAxis type="number" tickFormatter={x => (x * 100).toFixed(0) + '%'} /><YAxis type="category" dataKey="key" width={90} />
+          <Tooltip formatter={x => pc(x)} /><Bar dataKey="pct" fill="#0f766e" /></BarChart>
+      ) : (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#8598b3' }}>
+          Loading data...
+        </div>
+      )}
     </ResponsiveContainer>
     <table><thead><tr><th>{lv.replace('_', ' ')}</th><th className="n">Component VaR</th><th className="n">% of risk</th></tr></thead><tbody>
       {d.map(r => <tr key={r.key}><td>{r.key}</td><td className="n">{cr(r.var)}</td><td className="n">{pc(r.pct)}</td></tr>)}</tbody></table>
@@ -79,8 +91,16 @@ function Stress({ s, pid }) {
   const stress = s.stress || []
   return <>
     <Card title="Scenario library">
-      <ResponsiveContainer width="100%" height={220}><BarChart data={stress.map(x => ({ name: x.name, pct: x.pct }))} margin={{ left: 10 }}>
-        <CartesianGrid stroke="#e8ecf1" /><XAxis dataKey="name" tick={{ fontSize: 11 }} interval={0} /><YAxis tickFormatter={x => (x * 100).toFixed(0) + '%'} /><Tooltip formatter={x => pc(x)} /><Bar dataKey="pct" fill="#b91c1c" /></BarChart></ResponsiveContainer>
+      <ResponsiveContainer width="100%" height={220}>
+        {stress.length > 0 ? (
+          <BarChart data={stress.map(x => ({ name: x.name, pct: x.pct }))} margin={{ left: 10 }}>
+            <CartesianGrid stroke="#e8ecf1" /><XAxis dataKey="name" tick={{ fontSize: 11 }} interval={0} /><YAxis tickFormatter={x => (x * 100).toFixed(0) + '%'} /><Tooltip formatter={x => pc(x)} /><Bar dataKey="pct" fill="#b91c1c" /></BarChart>
+        ) : (
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#8598b3' }}>
+            Loading data...
+          </div>
+        )}
+      </ResponsiveContainer>
       <table><thead><tr><th>Scenario</th><th className="n">P&amp;L</th><th className="n">% NAV</th><th>Largest losses</th></tr></thead><tbody>
         {stress.map(x => <tr key={x.name}><td>{x.name}</td><td className="n neg">{cr(x.loss)}</td><td className="n">{pc(x.pct)}</td><td>{x.top.map(t => `${t.symbol} ${cr(t.pnl)}`).join(', ')}</td></tr>)}</tbody></table>
     </Card>

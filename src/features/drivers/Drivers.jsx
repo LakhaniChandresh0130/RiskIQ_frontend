@@ -15,20 +15,26 @@ const COLS = [
 
 export default function Drivers({ s }) {
   const [lv, setLv] = useState('position'), d = s.attribution?.[lv] || []
-  const max = Math.max(...d.map(x => x.pct), 1e-9)
+  const max = d.length > 0 ? Math.max(...d.map(x => x.pct), 1e-9) : 1e-9
   return <>
     <Card title="Risk drivers — component VaR, 1-day 99%" d={.05}
       right={<div className="tabs">{LEVELS.map(([k, l]) => <button key={k} className={lv === k ? 'on' : ''} onClick={() => setLv(k)}>{l}</button>)}</div>}>
       <div className="chartbox"><ResponsiveContainer width="100%" height={Math.max(200, Math.min(d.length, 14) * 34)}>
-        <BarChart data={d.slice(0, 14)} layout="vertical" margin={{ left: 40 }}>
-          <CartesianGrid stroke="rgba(120,160,200,.08)" horizontal={false} />
-          <XAxis type="number" tickFormatter={x => (x * 100).toFixed(0) + '%'} tick={{ fill: '#8598b3', fontSize: 11 }} axisLine={false} tickLine={false} />
-          <YAxis type="category" dataKey="key" width={110} tick={{ fill: '#c6d2e4', fontSize: 11 }} axisLine={false} tickLine={false} />
-          <Tooltip {...tip} formatter={x => pc(x)} cursor={{ fill: 'rgba(34,211,238,.06)' }} />
-          <Bar dataKey="pct" radius={[0, 4, 4, 0]}>
-            {d.slice(0, 14).map(r => <Cell key={r.key} fill={r.pct / max > .66 ? '#ef4444' : r.pct / max > .33 ? '#f59e0b' : '#22d3ee'} />)}
-          </Bar>
-        </BarChart>
+        {d.length > 0 ? (
+          <BarChart data={d.slice(0, 14)} layout="vertical" margin={{ left: 40 }}>
+            <CartesianGrid stroke="rgba(120,160,200,.08)" horizontal={false} />
+            <XAxis type="number" tickFormatter={x => (x * 100).toFixed(0) + '%'} tick={{ fill: '#8598b3', fontSize: 11 }} axisLine={false} tickLine={false} />
+            <YAxis type="category" dataKey="key" width={110} tick={{ fill: '#c6d2e4', fontSize: 11 }} axisLine={false} tickLine={false} />
+            <Tooltip {...tip} formatter={x => pc(x)} cursor={{ fill: 'rgba(34,211,238,.06)' }} />
+            <Bar dataKey="pct" radius={[0, 4, 4, 0]}>
+              {d.slice(0, 14).map(r => <Cell key={r.key} fill={r.pct / max > .66 ? '#ef4444' : r.pct / max > .33 ? '#f59e0b' : '#22d3ee'} />)}
+            </Bar>
+          </BarChart>
+        ) : (
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#8598b3' }}>
+            Loading data...
+          </div>
+        )}
       </ResponsiveContainer></div>
       <DataTable columns={COLS} rows={d} size={14} />
     </Card>

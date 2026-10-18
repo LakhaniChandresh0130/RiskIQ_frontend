@@ -35,18 +35,24 @@ export default function Dashboard({ s }) {
     <div className="grid-2-1">
       <Card title="1-day 99% VaR — last 120 trading days" d={.1} pad={false}>
         <div className="chartbox"><ResponsiveContainer width="100%" height={280}>
-          <AreaChart data={s.var_series || []}>
-            <defs><linearGradient id="varFill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#22d3ee" stopOpacity={.4} /><stop offset="100%" stopColor="#22d3ee" stopOpacity={0} />
-            </linearGradient></defs>
-            <CartesianGrid stroke="rgba(120,160,200,.08)" vertical={false} />
-            <XAxis dataKey="date" tick={{ fill: '#8598b3', fontSize: 11 }} minTickGap={45} axisLine={false} tickLine={false} />
-            <YAxis tickFormatter={ax} tick={{ fill: '#8598b3', fontSize: 11 }} axisLine={false} tickLine={false} width={64} />
-            <Tooltip {...tip} formatter={x => cr(x)} />
-            {s.limits?.warn && s.nav && <ReferenceLine y={s.limits.warn * s.nav} stroke="#fbbf24" strokeDasharray="4 3" label={{ value: 'warning', fontSize: 11, fill: '#fbbf24' }} />}
-            {s.limits?.crit && s.nav && <ReferenceLine y={s.limits.crit * s.nav} stroke="#f87171" strokeDasharray="4 3" label={{ value: 'critical', fontSize: 11, fill: '#f87171' }} />}
-            <Area type="monotone" dataKey="var" stroke="#22d3ee" strokeWidth={2} fill="url(#varFill)" dot={false} />
-          </AreaChart>
+          {s.var_series && s.var_series.length > 0 ? (
+            <AreaChart data={s.var_series}>
+              <defs><linearGradient id="varFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#22d3ee" stopOpacity={.4} /><stop offset="100%" stopColor="#22d3ee" stopOpacity={0} />
+              </linearGradient></defs>
+              <CartesianGrid stroke="rgba(120,160,200,.08)" vertical={false} />
+              <XAxis dataKey="date" tick={{ fill: '#8598b3', fontSize: 11 }} minTickGap={45} axisLine={false} tickLine={false} />
+              <YAxis tickFormatter={ax} tick={{ fill: '#8598b3', fontSize: 11 }} axisLine={false} tickLine={false} width={64} />
+              <Tooltip {...tip} formatter={x => cr(x)} />
+              {s.limits?.warn && s.nav && <ReferenceLine y={s.limits.warn * s.nav} stroke="#fbbf24" strokeDasharray="4 3" label={{ value: 'warning', fontSize: 11, fill: '#fbbf24' }} />}
+              {s.limits?.crit && s.nav && <ReferenceLine y={s.limits.crit * s.nav} stroke="#f87171" strokeDasharray="4 3" label={{ value: 'critical', fontSize: 11, fill: '#f87171' }} />}
+              <Area type="monotone" dataKey="var" stroke="#22d3ee" strokeWidth={2} fill="url(#varFill)" dot={false} />
+            </AreaChart>
+          ) : (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#8598b3' }}>
+              Loading chart data...
+            </div>
+          )}
         </ResponsiveContainer></div>
       </Card>
       <div className="stack">

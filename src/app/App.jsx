@@ -37,6 +37,7 @@ const cache = new Map()
 
 function AppContent() {
   const { user, hasPermission, logout, loading, isPendingApproval, isSuperAdmin } = useAuth()
+  const pendingApproval = isPendingApproval()
   const [pid, setPid] = useState('demo'), [list, setList] = useState([]), [s, setS] = useState(null)
   const [page, setPage] = useState('dashboard'), [err, setErr] = useState('')
   const [curr, setCurr] = useState(() => localStorage.getItem('riskiq-ccy') || 'INR')
@@ -78,14 +79,14 @@ function AppContent() {
       })
   }
   useEffect(() => {
-    if (!user) return
+    if (!user || pendingApproval) return
     cache.clear()
     setPid('demo')
     loadList()
-  }, [user?.sub, adminFilter])
-  useEffect(() => { if (user) loadAdmins() }, [user?.role])
+  }, [user?.sub, adminFilter, pendingApproval])
+  useEffect(() => { if (user && !pendingApproval) loadAdmins() }, [user?.role, pendingApproval])
   useEffect(() => { api('/fx').then(r => { setCcy(curr, r[curr] ?? 1); setRates(r) }).catch(() => {}) }, [])
-  useEffect(() => { if (user) load(pid) }, [pid, user])
+  useEffect(() => { if (user && !pendingApproval) load(pid) }, [pid, user, pendingApproval])
   const pickCcy = c => { setCcy(c, rates[c] ?? 1); localStorage.setItem('riskiq-ccy', c); setCurr(c) }
   const changed = id => { cache.clear(); loadList(); id === pid ? load(pid, true) : setPid(id); setPage('dashboard') }
   const nAlerts = s?.alerts?.length ?? 0
@@ -125,7 +126,7 @@ function AppContent() {
     return <Auth />
   }
 
-  if (isPendingApproval()) {
+  if (pendingApproval) {
     return <PendingApproval />
   }
 

@@ -31,7 +31,7 @@ function Tower({ d, x, z, top, hot, onHot }) {
 
 export default function RiskField3D({ data }) {
   const [hot, setHot] = useState(null)
-  const items = useMemo(() => data.slice(0, 49), [data])
+  const items = useMemo(() => (data || []).slice(0, 49), [data])
   const n = Math.ceil(Math.sqrt(items.length)), gap = 1.06, off = (n - 1) * gap / 2
   const top = Math.max(...items.map(d => d.pct), 1e-9)
   return <div className="scene3d">

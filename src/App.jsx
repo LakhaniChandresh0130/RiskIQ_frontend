@@ -123,7 +123,7 @@ export default function App() {
     portfolios: <Portfolios api={api} list={list} pid={pid} setPid={id => { setPid(id); setPage('dashboard') }} onChanged={changed} /> }
   const ready = page === 'portfolios' || page === 'agent' || s
   return <div className="app">
-    <aside><h1>RiskIQ</h1>{nav.map(([k, l]) => <button key={k} className={page === k ? 'on' : ''} onClick={() => setPage(k)}>{l}{k === 'alerts' && s?.alerts.length > 0 && <span className="badge">{s.alerts.length}</span>}</button>)}</aside>
+    <aside><h1>RiskIQ</h1>{nav.map(([k, l]) => <button key={k} className={page === k ? 'on' : ''} onClick={() => setPage(k)}>{l}{k === 'alerts' && (s?.alerts?.length || 0) > 0 && <span className="badge">{s.alerts?.length || 0}</span>}</button>)}</aside>
     <main><header><div><b>{nav.find(n => n[0] === page)[1]}</b>
       <select value={pid} onChange={e => setPid(e.target.value)} aria-label="Portfolio">{list.length ? list.map(p => <option key={p.id} value={p.id}>{p.name}</option>) : <option value="demo">Demo book</option>}</select></div>
       <div>{s && <><span>As of {s.as_of}</span><span>Data: {s.data_source}</span><span>Computed in {s.compute_ms} ms</span></>}</div></header>

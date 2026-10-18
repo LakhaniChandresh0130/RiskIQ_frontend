@@ -5,7 +5,7 @@ import { useMemo, useState } from 'react'
 export default function DataTable({ columns, rows, size = 15, search }) {
   const [q, setQ] = useState(''), [pg, setPg] = useState(0), [sort, setSort] = useState(null)
   const filtered = useMemo(() => {
-    let out = rows
+    let out = rows || []
     if (q && search) { const t = q.toLowerCase(); out = out.filter(r => search(r).toLowerCase().includes(t)) }
     if (sort) out = [...out].sort((a, b) => {
       const x = a[sort.key], y = b[sort.key]

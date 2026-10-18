@@ -67,3 +67,6 @@ htmlcov/
 *.tmp
 *.bak
 *.backup
+
+# Local Netlify folder
+.netlify

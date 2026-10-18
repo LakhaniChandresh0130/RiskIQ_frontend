@@ -43,8 +43,8 @@ export default function Dashboard({ s }) {
             <XAxis dataKey="date" tick={{ fill: '#8598b3', fontSize: 11 }} minTickGap={45} axisLine={false} tickLine={false} />
             <YAxis tickFormatter={ax} tick={{ fill: '#8598b3', fontSize: 11 }} axisLine={false} tickLine={false} width={64} />
             <Tooltip {...tip} formatter={x => cr(x)} />
-            <ReferenceLine y={s.limits.warn * s.nav} stroke="#fbbf24" strokeDasharray="4 3" label={{ value: 'warning', fontSize: 11, fill: '#fbbf24' }} />
-            <ReferenceLine y={s.limits.crit * s.nav} stroke="#f87171" strokeDasharray="4 3" label={{ value: 'critical', fontSize: 11, fill: '#f87171' }} />
+            {s.limits?.warn && s.nav && <ReferenceLine y={s.limits.warn * s.nav} stroke="#fbbf24" strokeDasharray="4 3" label={{ value: 'warning', fontSize: 11, fill: '#fbbf24' }} />}
+            {s.limits?.crit && s.nav && <ReferenceLine y={s.limits.crit * s.nav} stroke="#f87171" strokeDasharray="4 3" label={{ value: 'critical', fontSize: 11, fill: '#f87171' }} />}
             <Area type="monotone" dataKey="var" stroke="#22d3ee" strokeWidth={2} fill="url(#varFill)" dot={false} />
           </AreaChart>
         </ResponsiveContainer></div>

@@ -39,8 +39,8 @@ function Dashboard({ s }) {
           <LineChart data={s.var_series || []}><CartesianGrid stroke="#e8ecf1" /><XAxis dataKey="date" tick={{ fontSize: 11 }} minTickGap={40} />
             <YAxis tickFormatter={x => (x / 1e7).toFixed(1)} tick={{ fontSize: 11 }} unit=" cr" width={60} />
             <Tooltip formatter={x => cr(x)} />
-            <ReferenceLine y={s.limits.warn * s.nav} stroke="#b45309" strokeDasharray="4 3" label={{ value: 'warning', fontSize: 11, fill: '#b45309' }} />
-            <ReferenceLine y={s.limits.crit * s.nav} stroke="#b91c1c" strokeDasharray="4 3" label={{ value: 'critical', fontSize: 11, fill: '#b91c1c' }} />
+            {s.limits?.warn && s.nav && <ReferenceLine y={s.limits.warn * s.nav} stroke="#b45309" strokeDasharray="4 3" label={{ value: 'warning', fontSize: 11, fill: '#b45309' }} />}
+            {s.limits?.crit && s.nav && <ReferenceLine y={s.limits.crit * s.nav} stroke="#b91c1c" strokeDasharray="4 3" label={{ value: 'critical', fontSize: 11, fill: '#b91c1c' }} />}
             <Line dataKey="var" stroke="#0f766e" dot={false} strokeWidth={2} /></LineChart>
         </ResponsiveContainer>
       </Card>

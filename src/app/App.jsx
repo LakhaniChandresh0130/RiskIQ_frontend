@@ -88,7 +88,7 @@ function AppContent() {
   useEffect(() => { if (user) load(pid) }, [pid, user])
   const pickCcy = c => { setCcy(c, rates[c] ?? 1); localStorage.setItem('riskiq-ccy', c); setCurr(c) }
   const changed = id => { cache.clear(); loadList(); id === pid ? load(pid, true) : setPid(id); setPage('dashboard') }
-  const nAlerts = s?.alerts.length ?? 0
+  const nAlerts = s?.alerts?.length ?? 0
   const currencyOptions = CCY_ORDER.map(c => ({ code: c, available: !!rates[c] }))
 
   // Filter nav based on permissions
@@ -183,9 +183,9 @@ function AppContent() {
             )) : <option value="demo">Demo book</option>}
           </select></div>
         <div className="meta">
-          {s && <><span className="chip-meta">as of {s.as_of}</span>
-            <span className={'chip-meta ' + (s.data_quality.live ? 'live' : 'proxy')}>{s.data_source}</span>
-            <span className="chip-meta perf">computed in {s.compute_ms} ms</span></>}
+          {s && <><span className="chip-meta">as of {s.as_of || 'N/A'}</span>
+            <span className={'chip-meta ' + (s.data_quality?.live ? 'live' : 'proxy')}>{s.data_source || 'N/A'}</span>
+            <span className="chip-meta perf">computed in {s.compute_ms || 0} ms</span></>}
           <select className="ccysel" value={curr} onChange={e => pickCcy(e.target.value)} aria-label="Display currency" title="Display currency">
             {currencyOptions.map(opt => <option key={opt.code} value={opt.code} disabled={!opt.available}>{opt.code}</option>)}
           </select>

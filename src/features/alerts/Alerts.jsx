@@ -8,7 +8,7 @@ const SEV = [['all', 'All'], ['critical', 'Critical'], ['warning', 'Warning']]
 
 export default function Alerts({ s, refresh }) {
   const [sev, setSev] = useState('all'), [busy, setBusy] = useState('')
-  const rows = s.alerts.filter(a => sev === 'all' || a.severity === sev)
+  const rows = (s.alerts || []).filter(a => sev === 'all' || a.severity === sev)
   const act = async (a, verb) => {
     setBusy(a.id + verb)
     try { await api(`/alerts/${a.id}/${verb}`, {}); refresh() }

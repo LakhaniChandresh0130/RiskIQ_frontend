@@ -16,6 +16,7 @@ const FIELDS = [
 export default function Stress({ s, pid }) {
   const [f, setF] = useState({ eq_in: -10, eq_gl: -10, fx: 5, dy: 1, comm: 0 })
   const [res, setRes] = useState(null), [busy, setBusy] = useState(false), [err, setErr] = useState('')
+  const stress = s.stress || []
   const run = () => {
     setBusy(true); setErr('')
     api('/stress/custom?portfolio=' + pid, Object.fromEntries(Object.entries(f).map(([k, v]) => [k, (+v || 0) / 100])))
@@ -24,19 +25,19 @@ export default function Stress({ s, pid }) {
   return <>
     <Card title="Scenario library — portfolio P&L under each shock" d={.05} pad={false}>
       <div className="chartbox"><ResponsiveContainer width="100%" height={230}>
-        <BarChart data={s.stress} margin={{ left: 8 }}>
+        <BarChart data={stress} margin={{ left: 8 }}>
           <CartesianGrid stroke="rgba(120,160,200,.08)" vertical={false} />
           <XAxis dataKey="name" tick={{ fill: '#8598b3', fontSize: 11 }} interval={0} axisLine={false} tickLine={false} />
           <YAxis tickFormatter={x => (x * 100).toFixed(0) + '%'} tick={{ fill: '#8598b3', fontSize: 11 }} axisLine={false} tickLine={false} />
           <Tooltip {...tip} formatter={x => pc(x)} cursor={{ fill: 'rgba(248,113,113,.06)' }} />
           <Bar dataKey="pct" radius={[4, 4, 0, 0]}>
-            {s.stress.map(x => <Cell key={x.name} fill={x.pct < -.15 ? '#ef4444' : '#f59e0b'} />)}
+            {stress.map(x => <Cell key={x.name} fill={x.pct < -.15 ? '#ef4444' : '#f59e0b'} />)}
           </Bar>
         </BarChart>
       </ResponsiveContainer></div>
       <div className="card-b"><div className="tbl">
         <table><thead><tr><th>Scenario</th><th className="n">P&L</th><th className="n">% of exposure</th><th>Largest losses</th></tr></thead><tbody>
-          {s.stress.map(x => <tr key={x.name}><td data-label="Scenario"><b>{x.name}</b></td><td data-label="P&L" className="n neg">{cr(x.loss)}</td><td data-label="% of exposure" className="n">{pc(x.pct)}</td>
+          {stress.map(x => <tr key={x.name}><td data-label="Scenario"><b>{x.name}</b></td><td data-label="P&L" className="n neg">{cr(x.loss)}</td><td data-label="% of exposure" className="n">{pc(x.pct)}</td>
             <td data-label="Largest losses">{x.top.map(t => `${t.symbol} ${cr(t.pnl)}`).join(', ')}</td></tr>)}
         </tbody></table>
       </div></div>

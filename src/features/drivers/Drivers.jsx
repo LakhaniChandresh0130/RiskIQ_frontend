@@ -14,7 +14,7 @@ const COLS = [
 ]
 
 export default function Drivers({ s }) {
-  const [lv, setLv] = useState('position'), d = s.attribution[lv]
+  const [lv, setLv] = useState('position'), d = s.attribution?.[lv] || []
   const max = Math.max(...d.map(x => x.pct), 1e-9)
   return <>
     <Card title="Risk drivers — component VaR, 1-day 99%" d={.05}

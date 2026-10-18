@@ -20,6 +20,7 @@ const POS_COLS = [
 ]
 
 export default function Dashboard({ s }) {
+  if (!s) return <div className="card"><div className="card-b">Loading dashboard data...</div></div>
   const m = s.methods || {}, u = s.nav ? (m.parametric?.var || 0) / s.nav : 0
   const tone = u >= (s.limits?.crit || 1) ? 'crit' : u >= (s.limits?.warn || 1) ? 'warn' : ''
   const bt = s.backtest || { zone: 'green', breaches: 0, kupiec_p: 1 }

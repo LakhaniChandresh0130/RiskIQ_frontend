@@ -14,6 +14,7 @@ const FIELDS = [
 ]
 
 export default function Stress({ s, pid }) {
+  if (!s) return <div className="card"><div className="card-b">Loading stress data...</div></div>
   const [f, setF] = useState({ eq_in: -10, eq_gl: -10, fx: 5, dy: 1, comm: 0 })
   const [res, setRes] = useState(null), [busy, setBusy] = useState(false), [err, setErr] = useState('')
   const stress = s.stress || []

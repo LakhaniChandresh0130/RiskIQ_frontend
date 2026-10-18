@@ -100,10 +100,10 @@ function AppContent() {
   })
 
   const pages = {
-    dashboard: s && <Dashboard s={s} />,
-    drivers: s && <Drivers s={s} />,
-    stress: s && <Stress s={s} pid={pid} />,
-    alerts: s && <Alerts s={s} refresh={() => load(pid, true)} />,
+    dashboard: s ? <Dashboard s={s} /> : null,
+    drivers: s ? <Drivers s={s} /> : null,
+    stress: s ? <Stress s={s} pid={pid} /> : null,
+    alerts: s ? <Alerts s={s} refresh={() => load(pid, true)} /> : null,
     agent: <Agent key={pid} pid={pid} />,
     portfolios: <Portfolios list={list} pid={pid} setPid={id => { setPid(id); setPage('dashboard') }} onChanged={changed} />,
     governance: <Governance pid={pid} />,

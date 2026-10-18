@@ -7,6 +7,7 @@ import { api } from '../../lib/api.js'
 const SEV = [['all', 'All'], ['critical', 'Critical'], ['warning', 'Warning']]
 
 export default function Alerts({ s, refresh }) {
+  if (!s) return <div className="card"><div className="card-b">Loading alerts data...</div></div>
   const [sev, setSev] = useState('all'), [busy, setBusy] = useState('')
   const rows = (s.alerts || []).filter(a => sev === 'all' || a.severity === sev)
   const act = async (a, verb) => {

@@ -14,6 +14,7 @@ const COLS = [
 ]
 
 export default function Drivers({ s }) {
+  if (!s) return <div className="card"><div className="card-b">Loading drivers data...</div></div>
   const [lv, setLv] = useState('position'), d = s.attribution?.[lv] || []
   const max = d.length > 0 ? Math.max(...d.map(x => x.pct), 1e-9) : 1e-9
   return <>

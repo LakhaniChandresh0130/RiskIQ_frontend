@@ -20,13 +20,12 @@ export default function Portfolios({ api, list, pid, setPid, onChanged }) {
     <div className="card"><h3>Add a portfolio</h3><div className="form2">
       <label>Portfolio name<input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Equity desk, Mumbai" /></label>
       <label className="btn file">Upload CSV or Excel<input type="file" accept=".csv,.xlsx,.xls" onChange={upload} disabled={busy} hidden /></label>
-      <a className="btn alt" href="/api/template.csv">Download template</a>
-      <button className="btn alt" disabled={busy} onClick={() => run(() => api('/portfolios/demo-large?n=5000', {}))}>Generate 5,000-position test book</button></div>
+      <a className="btn alt" href="/api/template.csv">Download template</a></div>
       <p className="hint">Required column: symbol, plus market_value or quantity and price. Optional: exchange (NSE, BSE or a US exchange), currency, asset_class, sector, name, duration. USD rows are converted to INR.</p>
       {msg && <p className={msg.ok ? 'okmsg' : 'neg'}>{msg.t}</p>}</div>
     <div className="card"><h3>Your portfolios</h3><div><table><thead><tr><th>Name</th><th>Source</th><th className="n">Positions</th><th></th></tr></thead><tbody>
       {list.map(p => <tr key={p.id}><td>{p.id === pid ? <b>{p.name}</b> : p.name}</td><td>{p.source}</td><td className="n">{p.n_positions?.toLocaleString('en-IN')}</td>
-        <td className="n"><button className="btn alt" onClick={() => setPid(p.id)}>Open</button>{p.id !== 'demo' && <button className="btn alt" onClick={() => confirm('Delete this portfolio?') && api(`/portfolios/${p.id}/delete`, {}).then(() => onChanged('demo'))}>Delete</button>}</td></tr>)}</tbody></table></div></div>
+        <td className="n"><button className="btn alt" onClick={() => setPid(p.id)}>Open</button><button className="btn alt" onClick={() => confirm('Delete this portfolio?') && api(`/portfolios/${p.id}/delete`, {}).then(() => onChanged(null))}>Delete</button>}</td></tr>)}</tbody></table></div></div>
     <div className="card"><h3>Connect a data source</h3><div><table><thead><tr><th>Connector</th><th>Status</th><th></th></tr></thead><tbody>
       {conns.map(c => <tr key={c.id}><td>{c.name}</td><td>{c.status}</td><td className="n">{c.id === 'kite' && c.status === 'available' && <button className="btn alt" onClick={kite}>Connect Zerodha</button>}</td></tr>)}</tbody></table></div></div>
   </>

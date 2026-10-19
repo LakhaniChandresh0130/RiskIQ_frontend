@@ -38,7 +38,7 @@ const cache = new Map()
 function AppContent() {
   const { user, hasPermission, logout, loading, isPendingApproval, isSuperAdmin } = useAuth()
   const pendingApproval = isPendingApproval()
-  const [pid, setPid] = useState('demo'), [list, setList] = useState([]), [s, setS] = useState(null)
+  const [pid, setPid] = useState(null), [list, setList] = useState([]), [s, setS] = useState(null)
   const [page, setPage] = useState('dashboard'), [err, setErr] = useState('')
   const [curr, setCurr] = useState(() => localStorage.getItem('riskiq-ccy') || 'INR')
   const [rates, setRates] = useState({ INR: 1 })
@@ -49,11 +49,10 @@ function AppContent() {
     const q = isSuperAdmin() && filterAdmin && filterAdmin !== 'all' ? `?admin_id=${encodeURIComponent(filterAdmin)}` : ''
     api(`/portfolios${q}`).then(data => {
       setList(data)
-      // If current portfolio is not in new list or belongs to another user, reset to demo or first item
+      // If current portfolio is not in new list or belongs to another user, reset to first item
       setPid(currPid => {
-        if (currPid === 'demo') return 'demo'
         const exists = data.some(p => p.id === currPid)
-        return exists ? currPid : (data[0]?.id || 'demo')
+        return exists ? currPid : (data[0]?.id || null)
       })
     }).catch(e => {
       setErr(e.message || 'Failed to load portfolios. Please check your connection.')
@@ -81,7 +80,7 @@ function AppContent() {
   useEffect(() => {
     if (!user || pendingApproval) return
     cache.clear()
-    setPid('demo')
+    setPid(null)
     loadList()
   }, [user?.sub, adminFilter, pendingApproval])
   useEffect(() => { if (user && !pendingApproval) loadAdmins() }, [user?.role, pendingApproval])
@@ -181,7 +180,7 @@ function AppContent() {
               <option key={p.id} value={p.id}>
                 {p.name} {p.owner_email ? `(${p.owner_email})` : ''}
               </option>
-            )) : <option value="demo">Demo book</option>}
+            )) : <option value="" disabled>No portfolios available</option>}
           </select></div>
         <div className="meta">
           {s && <><span className="chip-meta">as of {s.as_of || 'N/A'}</span>

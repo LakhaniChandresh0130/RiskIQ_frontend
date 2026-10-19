@@ -26,7 +26,7 @@ export default function Admin() {
   const loadPortfolios = async () => {
     try {
       const data = await api('/portfolios')
-      setPortfolios(data.filter(p => p.id !== 'demo'))
+      setPortfolios(data)
     } catch (e) {
       setError(e.message)
     }

@@ -54,16 +54,8 @@ export const AuthProvider = ({ children }) => {
     try {
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
       if (!supabaseUrl) {
-        // Demo mode: auto-login with demo user
-        try {
-          const userData = await api('/me')
-          setUser(userData)
-          setError('')
-          return true
-        } catch (apiError) {
-          setError('Demo mode: Unable to connect to backend. Please ensure the backend server is running on port 8000.')
-          return false
-        }
+        setError('Supabase is not configured. Please set VITE_SUPABASE_URL in your environment variables.')
+        return false
       }
       const response = await fetch(`${supabaseUrl}/auth/v1/token?grant_type=password`, {
         method: 'POST',
@@ -99,16 +91,8 @@ export const AuthProvider = ({ children }) => {
     try {
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
       if (!supabaseUrl) {
-        // Demo mode: auto-login with demo user
-        try {
-          const userData = await api('/me')
-          setUser(userData)
-          setError('')
-          return true
-        } catch (apiError) {
-          setError('Demo mode: Unable to connect to backend. Please ensure the backend server is running on port 8000.')
-          return false
-        }
+        setError('Supabase is not configured. Please set VITE_SUPABASE_URL in your environment variables.')
+        return false
       }
       const response = await fetch(`${supabaseUrl}/auth/v1/signup`, {
         method: 'POST',

@@ -35,11 +35,12 @@ export default function Portfolios({ list, pid, setPid, onChanged }) {
 
     <Card title="Portfolios" d={.1}><div className="tbl">
       <table><thead><tr><th>Name</th><th>Owner / Admin</th><th>Source</th><th className="n">Positions</th><th className="n"></th></tr></thead><tbody>
-        {list.map(p => <tr key={p.id}><td data-label="Name">{p.id === pid ? <b>{p.name}</b> : p.name}</td>
+        {(list || []).map(p => <tr key={p.id}><td data-label="Name">{p.id === pid ? <b>{p.name}</b> : p.name}</td>
           <td data-label="Owner / Admin"><span className="chip-meta" style={{ fontSize: '11px' }}>{p.owner_email || (p.id === 'demo' ? 'System (Sample)' : (p.owner || 'You'))}</span></td>
           <td data-label="Source" className="mut">{p.source}</td><td data-label="Positions" className="n">{int(p.n_positions ?? 0)}</td>
           <td data-label="" className="n"><button className="btn ghost sm" onClick={() => setPid(p.id)}>Open</button>
             {p.id !== 'demo' && <button className="btn ghost sm danger" onClick={() => confirm('Delete this portfolio?') && api(`/portfolios/${p.id}/delete`, {}).then(() => onChanged('demo'))}>Delete</button>}</td></tr>)}
+        {(!list || list.length === 0) && <tr><td colSpan="5" className="empty">No portfolios found.</td></tr>}
       </tbody></table>
     </div></Card>
 

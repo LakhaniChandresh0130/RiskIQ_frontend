@@ -92,6 +92,23 @@ function AppContent() {
   const nAlerts = s?.alerts?.length ?? 0
   const currencyOptions = CCY_ORDER.map(c => ({ code: c, available: !!rates[c] }))
 
+  if (loading) {
+    return <div className="auth-container">
+      <div className="aurora"><i /><i /><i /><div className="gridfx" /></div>
+      <div className="auth-card">
+        <div className="skels">{[...Array(3)].map((_, i) => <div key={i} className="skel" style={{ animationDelay: i * .12 + 's' }} />)}</div>
+      </div>
+    </div>
+  }
+
+  if (!user) {
+    return <Auth />
+  }
+
+  if (pendingApproval) {
+    return <PendingApproval />
+  }
+
   // Filter nav based on permissions
   const filteredNav = NAV.filter(([key]) => {
     if (key === 'admin') return hasPermission('admin')
@@ -112,23 +129,6 @@ function AppContent() {
     audit: <Audit />,
   }
   const ready = page === 'portfolios' || page === 'agent' || page === 'governance' || page === 'admin' || page === 'audit' || s
-
-  if (loading) {
-    return <div className="auth-container">
-      <div className="aurora"><i /><i /><i /><div className="gridfx" /></div>
-      <div className="auth-card">
-        <div className="skels">{[...Array(3)].map((_, i) => <div key={i} className="skel" style={{ animationDelay: i * .12 + 's' }} />)}</div>
-      </div>
-    </div>
-  }
-
-  if (!user) {
-    return <Auth />
-  }
-
-  if (pendingApproval) {
-    return <PendingApproval />
-  }
 
   return <div className="app">
     <div className="aurora"><i /><i /><i /><div className="gridfx" /></div>
@@ -152,7 +152,7 @@ function AppContent() {
     <main>
       <header>
         <div className="crumbs"><b>{TITLES[page]}</b>
-          {isSuperAdmin() && adminList.length > 0 && (
+          {isSuperAdmin() && (adminList || []).length > 0 && (
             <select
               value={adminFilter}
               onChange={e => setAdminFilter(e.target.value)}
@@ -169,7 +169,7 @@ function AppContent() {
               }}
             >
               <option value="all">👥 All Admins' Books</option>
-              {adminList.map(a => (
+              {(adminList || []).map(a => (
                 <option key={a.id} value={a.user_id || a.id}>
                   👤 Admin: {a.email || a.user_id} ({a.role})
                 </option>
@@ -177,7 +177,7 @@ function AppContent() {
             </select>
           )}
           <select value={pid} onChange={e => setPid(e.target.value)} aria-label="Portfolio">
-            {list.length ? list.map(p => (
+            {(list || []).length ? list.map(p => (
               <option key={p.id} value={p.id}>
                 {p.name} {p.owner_email ? `(${p.owner_email})` : ''}
               </option>

@@ -17,6 +17,28 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     checkAuth()
 
+    // Handle Supabase callback from email verification (access_token in URL hash)
+    const hash = window.location.hash
+    if (hash && hash.includes('access_token')) {
+      const params = new URLSearchParams(hash.substring(1))
+      const accessToken = params.get('access_token')
+      if (accessToken) {
+        localStorage.setItem('riskiq-token', accessToken)
+        // Clear the hash from URL
+        window.history.replaceState({}, document.title, window.location.pathname)
+        // Fetch user data with the new token
+        api('/me', null, false, accessToken)
+          .then(userData => {
+            setUser(userData)
+            setError('')
+          })
+          .catch(e => {
+            localStorage.removeItem('riskiq-token')
+            setError('Failed to authenticate. Please try logging in again.')
+          })
+      }
+    }
+
     const handleUnauthorized = (e) => {
       localStorage.removeItem('riskiq-token')
       setUser(prev => {
@@ -129,6 +151,8 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('riskiq-token')
     setUser(null)
     setError('')
+    // Dispatch custom event to notify other components to clear their state
+    window.dispatchEvent(new CustomEvent('auth:logout'))
   }
 
   const hasPermission = (perm) => {

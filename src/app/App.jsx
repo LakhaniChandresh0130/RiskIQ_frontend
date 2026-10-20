@@ -83,6 +83,21 @@ function AppContent() {
     setPid(null)
     loadList()
   }, [user?.sub, adminFilter, pendingApproval])
+
+  // Clear all state on logout
+  useEffect(() => {
+    const handleLogout = () => {
+      cache.clear()
+      setPid(null)
+      setList([])
+      setS(null)
+      setAdminList([])
+      setAdminFilter('all')
+      setPage('dashboard')
+    }
+    window.addEventListener('auth:logout', handleLogout)
+    return () => window.removeEventListener('auth:logout', handleLogout)
+  }, [])
   useEffect(() => { if (user && !pendingApproval) loadAdmins() }, [user?.role, pendingApproval])
   useEffect(() => { api('/fx').then(r => { setCcy(curr, r[curr] ?? 1); setRates(r) }).catch(() => {}) }, [])
   useEffect(() => { if (user && !pendingApproval) load(pid) }, [pid, user, pendingApproval])

@@ -22,6 +22,8 @@ export const AuthProvider = ({ children }) => {
     if (hash && hash.includes('access_token')) {
       const params = new URLSearchParams(hash.substring(1))
       const accessToken = params.get('access_token')
+      const emailFromParams = params.get('email') // Try to get email from URL params
+
       if (accessToken) {
         localStorage.setItem('riskiq-token', accessToken)
         // Clear the hash from URL
@@ -29,6 +31,10 @@ export const AuthProvider = ({ children }) => {
         // Fetch user data with the new token
         api('/me', null, false, accessToken)
           .then(userData => {
+            // If email is missing from backend, use the email from URL params
+            if (!userData.email && emailFromParams) {
+              userData.email = emailFromParams
+            }
             setUser(userData)
             setError('')
           })
@@ -99,7 +105,15 @@ export const AuthProvider = ({ children }) => {
       }
 
       localStorage.setItem('riskiq-token', data.access_token)
+
+      // Fetch user data with the access token
       const userData = await api('/me', null, false, data.access_token)
+
+      // If email is missing from backend response, use the email from login
+      if (!userData.email && email) {
+        userData.email = email
+      }
+
       setUser(userData)
       setError('')
       return true

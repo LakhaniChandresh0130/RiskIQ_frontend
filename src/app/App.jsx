@@ -5,6 +5,8 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { api } from '../lib/api.js'
 import { setCcy } from '../lib/format.js'
 import { AuthProvider, useAuth } from '../contexts/AuthContext.jsx'
+import { ToastProvider } from '../components/Toast.jsx'
+import { PageLoader } from '../components/Loader.jsx'
 import Dashboard from '../features/dashboard/Dashboard.jsx'
 import Portfolios from '../features/portfolios/Portfolios.jsx'
 import Drivers from '../features/drivers/Drivers.jsx'
@@ -17,6 +19,7 @@ import Audit from '../features/audit/Audit.jsx'
 import Auth from '../features/auth/Auth.jsx'
 import PendingApproval from '../features/auth/PendingApproval.jsx'
 import ErrorBoundary from '../components/ErrorBoundary.jsx'
+import { ErrorDisplay } from '../components/ErrorDisplay.jsx'
 
 const NAV = [
   ['dashboard', 'Dashboard', 'M3 3h7v7H3zM14 3h7v4h-7zM14 11h7v10h-7zM3 14h7v7H3z'],
@@ -59,6 +62,10 @@ function AppContent() {
     })
   }
 
+  const retryLoadList = () => {
+    loadList()
+  }
+
   const loadAdmins = () => {
     if (user?.role === 'super_admin' || hasPermission('admin')) {
       api('/members').then(m => {
@@ -76,6 +83,10 @@ function AppContent() {
       .catch(e => {
         setErr(e.message || 'Cannot reach the backend on port 8000. Start it with: uvicorn main:app --port 8000')
       })
+  }
+
+  const retryLoad = () => {
+    if (pid) load(pid, true)
   }
   useEffect(() => {
     if (!user || pendingApproval) return
@@ -213,9 +224,8 @@ function AppContent() {
       <AnimatePresence mode="wait"><motion.section key={page + '-' + curr}
         initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: .22 }}>
         {ready ? pages[page]
-          : err ? <div className="card"><div className="card-b neg">{err}</div></div>
+          : err ? <ErrorDisplay error={err} onRetry={retryLoad} message="Failed to load data" />
           : <div className="skels">{[...Array(4)].map((_, i) => <div key={i} className="skel" style={{ animationDelay: i * .12 + 's' }} />)}</div>}
-        {err && s === null && ready && page !== 'portfolios' && <p className="neg">{err}</p>}
       </motion.section></AnimatePresence>
     </main>
   </div>
@@ -224,9 +234,11 @@ function AppContent() {
 export default function App() {
   return (
     <ErrorBoundary>
-      <AuthProvider>
-        <AppContent />
-      </AuthProvider>
+      <ToastProvider>
+        <AuthProvider>
+          <AppContent />
+        </AuthProvider>
+      </ToastProvider>
     </ErrorBoundary>
   )
 }

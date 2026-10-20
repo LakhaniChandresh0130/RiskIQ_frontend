@@ -5,6 +5,7 @@ import { Card, Kpi, Tag } from '../../components/ui.jsx'
 import DataTable from '../../components/DataTable.jsx'
 import CountUp from '../../components/CountUp.jsx'
 import ErrorBoundary from '../../components/ErrorBoundary.jsx'
+import { SkeletonCard, InlineLoader } from '../../components/Loader.jsx'
 import { cr, pc, int, ax, ccy } from '../../lib/format.js'
 
 const RiskField3D = lazy(() => import('../../components/RiskField3D.jsx'))
@@ -20,7 +21,19 @@ const POS_COLS = [
 ]
 
 export default function Dashboard({ s }) {
-  if (!s) return <div className="card"><div className="card-b">Loading dashboard data...</div></div>
+  if (!s) {
+    return (
+      <>
+        <div className="kpis">
+          {[...Array(5)].map((_, i) => (
+            <SkeletonCard key={i} count={1} />
+          ))}
+        </div>
+        <SkeletonCard count={3} />
+      </>
+    )
+  }
+
   const m = s.methods || {}, u = s.nav ? (m.parametric?.var || 0) / s.nav : 0
   const tone = u >= (s.limits?.crit || 1) ? 'crit' : u >= (s.limits?.warn || 1) ? 'warn' : ''
   const bt = s.backtest || { zone: 'green', breaches: 0, kupiec_p: 1 }
@@ -51,7 +64,7 @@ export default function Dashboard({ s }) {
             </AreaChart>
           ) : (
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#8598b3' }}>
-              Loading chart data...
+              <InlineLoader text="Loading chart data..." />
             </div>
           )}
         </ResponsiveContainer></div>
@@ -69,7 +82,7 @@ export default function Dashboard({ s }) {
     </div>
 
     <Card title="Risk skyline — each tower is a position's share of 99% VaR" d={.15} pad={false}>
-      <ErrorBoundary><Suspense fallback={<div className="scene3d"><div className="scene3d-tip">Loading 3D view…</div></div>}>
+      <ErrorBoundary><Suspense fallback={<div className="scene3d"><div className="scene3d-tip"><InlineLoader text="Loading 3D view..." /></div></div>}>
         <RiskField3D data={s.attribution?.position || []} /></Suspense></ErrorBoundary>
     </Card>
 

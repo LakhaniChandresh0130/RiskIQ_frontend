@@ -77,16 +77,20 @@ function AppContent() {
 
   const load = (id, force) => {
     setErr('')
+    if (!id || id === 'null') {
+      setS(null)
+      return
+    }
     if (!force && cache.has(id)) return setS(cache.get(id))
     setS(null)
     api(`/portfolios/${id}/snapshot`).then(d => { cache.set(id, d); setS(d) })
       .catch(e => {
-        setErr(e.message || 'Cannot reach the backend on port 8000. Start it with: uvicorn main:app --port 8000')
+        setErr(e.message || 'Failed to load portfolio data.')
       })
   }
 
   const retryLoad = () => {
-    if (pid) load(pid, true)
+    if (pid && pid !== 'null') load(pid, true)
   }
   useEffect(() => {
     if (!user || pendingApproval) return
@@ -111,7 +115,7 @@ function AppContent() {
   }, [])
   useEffect(() => { if (user && !pendingApproval) loadAdmins() }, [user?.role, pendingApproval])
   useEffect(() => { api('/fx').then(r => { setCcy(curr, r[curr] ?? 1); setRates(r) }).catch(() => {}) }, [])
-  useEffect(() => { if (user && !pendingApproval) load(pid) }, [pid, user, pendingApproval])
+  useEffect(() => { if (user && !pendingApproval && pid && pid !== 'null') load(pid) }, [pid, user, pendingApproval])
   const pickCcy = c => { setCcy(c, rates[c] ?? 1); localStorage.setItem('riskiq-ccy', c); setCurr(c) }
   const changed = id => { cache.clear(); loadList(); id === pid ? load(pid, true) : setPid(id); setPage('dashboard') }
   const nAlerts = s?.alerts?.length ?? 0
@@ -224,6 +228,18 @@ function AppContent() {
       <AnimatePresence mode="wait"><motion.section key={page + '-' + curr}
         initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: .22 }}>
         {ready ? pages[page]
+          : !list.length ? (
+            <div className="card" style={{ maxWidth: 520, margin: '60px auto', textAlign: 'center', padding: '36px 24px' }}>
+              <div style={{ fontSize: '42px', marginBottom: '14px' }}>📁</div>
+              <h3 style={{ marginBottom: '8px' }}>No Portfolios Found</h3>
+              <p style={{ color: 'var(--text-muted, #888)', marginBottom: '20px', lineHeight: 1.5 }}>
+                There are no portfolios created yet. Upload or create your first portfolio to view risk analytics and stress tests.
+              </p>
+              <button className="btn primary" onClick={() => setPage('portfolios')}>
+                Go to Portfolios
+              </button>
+            </div>
+          )
           : err ? <ErrorDisplay error={err} onRetry={retryLoad} message="Failed to load data" />
           : <div className="skels">{[...Array(4)].map((_, i) => <div key={i} className="skel" style={{ animationDelay: i * .12 + 's' }} />)}</div>}
       </motion.section></AnimatePresence>

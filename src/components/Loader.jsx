@@ -1,56 +1,72 @@
-// Comprehensive loading component with different variants
+// Comprehensive loading component with self-contained styles
 import { motion } from 'framer-motion'
 
 export function Spinner({ size = 'md', className = '' }) {
-  const sizes = {
-    sm: 'w-4 h-4',
-    md: 'w-8 h-8',
-    lg: 'w-12 h-12',
-    xl: 'w-16 h-16'
+  const pixelSizes = {
+    sm: 14,
+    md: 20,
+    lg: 28,
+    xl: 36
   }
+  const px = pixelSizes[size] || 20
+
   return (
-    <div className={`inline-block ${sizes[size]} ${className}`}>
+    <span
+      className={className}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: `${px}px`,
+        height: `${px}px`,
+        verticalAlign: 'middle',
+        flexShrink: 0
+      }}
+    >
       <svg
-        className="animate-spin"
+        style={{
+          width: '100%',
+          height: '100%',
+          animation: 'spin 0.8s linear infinite'
+        }}
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
       >
         <circle
-          className="opacity-25"
           cx="12"
           cy="12"
           r="10"
           stroke="currentColor"
-          strokeWidth="4"
+          strokeWidth="3.5"
+          strokeOpacity="0.25"
         />
         <path
-          className="opacity-75"
           fill="currentColor"
           d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
         />
       </svg>
-    </div>
+    </span>
   )
 }
 
 export function ButtonLoader({ text = 'Loading...' }) {
   return (
-    <span className="flex items-center gap-2">
+    <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
       <Spinner size="sm" />
-      {text}
+      <span>{text}</span>
     </span>
   )
 }
 
 export function PageLoader({ message = 'Loading...' }) {
   return (
-    <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '320px', gap: '16px' }}>
       <Spinner size="xl" />
       <motion.p
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="text-[#8598b3]"
+        style={{ color: '#8598b3', fontSize: '14px' }}
       >
         {message}
       </motion.p>
@@ -60,7 +76,7 @@ export function PageLoader({ message = 'Loading...' }) {
 
 export function InlineLoader({ text = 'Loading...' }) {
   return (
-    <div className="flex items-center gap-2 text-[#8598b3]">
+    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: '#8598b3' }}>
       <Spinner size="sm" />
       <span>{text}</span>
     </div>

@@ -117,7 +117,7 @@ export default function Admin() {
             • <strong>Admin:</strong> Can approve pending users and assign regular roles (<em>risk_manager, analyst, viewer, auditor</em>). Only sees and manages their own portfolios.<br/>
             • <strong>Pending Users:</strong> Must wait for Admin / Super Admin approval before accessing platform features.<br/>
             <br/>
-            <strong>Your Current Role:</strong> <span className="chip-meta">{user?.role}</span>
+            <strong>Your Current Role:</strong> <span className={user?.role === 'super_admin' ? 'tag purple' : 'tag blue'} style={{ marginLeft: '6px' }}>{user?.role}</span>
           </div>
 
           {error && <div className="card-b neg">{error}</div>}
@@ -168,14 +168,24 @@ export default function Admin() {
                       <td>
                         {m.role ? (
                           cannotEdit ? (
-                            <span className="tag purple">{m.role}</span>
+                            <span className={m.role === 'super_admin' ? 'tag purple' : m.role === 'admin' ? 'tag blue' : 'tag green'}>
+                              {m.role.replace('_', ' ')}
+                            </span>
                           ) : (
                             <select
                               value={m.role}
                               onChange={(e) => handleRoleChange(m.id, e.target.value)}
                               disabled={isLastSuperAdmin}
+                              style={{
+                                background: '#0b1424',
+                                color: '#e2e8f0',
+                                border: '1px solid var(--line)',
+                                padding: '4px 8px',
+                                borderRadius: '6px',
+                                fontSize: '12px'
+                              }}
                             >
-                              {assignableRoles.map(r => <option key={r} value={r}>{r}</option>)}
+                              {assignableRoles.map(r => <option key={r} value={r}>{r.replace('_', ' ')}</option>)}
                             </select>
                           )
                         ) : (

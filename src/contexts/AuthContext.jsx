@@ -24,21 +24,29 @@ export const AuthProvider = ({ children }) => {
       const accessToken = params.get('access_token')
       const emailFromParams = params.get('email') // Try to get email from URL params
 
+      console.log('[Auth] Email verification callback detected')
+      console.log('[Auth] Email from params:', emailFromParams)
+      console.log('[Auth] Access token present:', !!accessToken)
+
       if (accessToken) {
         localStorage.setItem('riskiq-token', accessToken)
         // Clear the hash from URL
         window.history.replaceState({}, document.title, window.location.pathname)
         // Fetch user data with the new token
+        console.log('[Auth] Calling /me endpoint...')
         api('/me', null, false, accessToken)
           .then(userData => {
+            console.log('[Auth] User data received:', userData)
             // If email is missing from backend, use the email from URL params
             if (!userData.email && emailFromParams) {
               userData.email = emailFromParams
+              console.log('[Auth] Email added from params:', emailFromParams)
             }
             setUser(userData)
             setError('')
           })
           .catch(e => {
+            console.error('[Auth] Error fetching user data:', e)
             localStorage.removeItem('riskiq-token')
             setError('Failed to authenticate. Please try logging in again.')
           })
@@ -46,6 +54,7 @@ export const AuthProvider = ({ children }) => {
     }
 
     const handleUnauthorized = (e) => {
+      console.log('[Auth] Unauthorized event received:', e.detail)
       localStorage.removeItem('riskiq-token')
       setUser(prev => {
         if (prev) {

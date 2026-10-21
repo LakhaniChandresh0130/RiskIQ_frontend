@@ -4,6 +4,9 @@
 const MAX_RETRIES = 2
 const RETRY_DELAY = 1000
 
+const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || '').replace(/\/+$/, '')
+const API_BASE_URL = BACKEND_URL ? `${BACKEND_URL}/api` : '/api'
+
 async function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
@@ -26,7 +29,8 @@ export async function api(path, body, raw, customToken, retries = MAX_RETRIES) {
   let response, data, lastError
 
   try {
-    response = await fetch('/api' + path, body ? {
+    const url = `${API_BASE_URL}${path.startsWith('/') ? path : '/' + path}`
+    response = await fetch(url, body ? {
       method: 'POST',
       headers,
       body: raw ? body : JSON.stringify(body),
@@ -38,6 +42,11 @@ export async function api(path, body, raw, customToken, retries = MAX_RETRIES) {
       return api(path, body, raw, customToken, retries - 1)
     }
     throw new Error('Network error. Please check your connection and try again.')
+  }
+
+  const contentType = response.headers?.get('content-type') || ''
+  if (contentType.includes('text/html')) {
+    throw new Error('API request returned HTML instead of JSON. Backend service may be sleeping or unreachable.')
   }
 
   try {

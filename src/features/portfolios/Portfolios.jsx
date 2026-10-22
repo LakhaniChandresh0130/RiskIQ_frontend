@@ -8,7 +8,7 @@ import { ErrorDisplay } from '../../components/ErrorDisplay.jsx'
 import { api } from '../../lib/api.js'
 import { int } from '../../lib/format.js'
 
-export default function Portfolios({ list, pid, setPid, onChanged }) {
+export default function Portfolios({ list, setList, pid, setPid, onChanged }) {
   const [name, setName] = useState(''), [msg, setMsg] = useState(null), [busy, setBusy] = useState(false), [conns, setConns] = useState([])
   const [deleting, setDeleting] = useState(null)
   const [connecting, setConnecting] = useState(false)
@@ -72,7 +72,9 @@ export default function Portfolios({ list, pid, setPid, onChanged }) {
 
     // Optimistic update: remove from list immediately
     const previousList = list
-    setList(prev => prev.filter(p => p.id !== id))
+    if (setList) {
+      setList(prev => prev.filter(p => p.id !== id))
+    }
 
     try {
       await api(`/portfolios/${id}/delete`, {})
@@ -80,7 +82,7 @@ export default function Portfolios({ list, pid, setPid, onChanged }) {
       onChanged(null)
     } catch (e) {
       // Revert optimistic update on error
-      setList(previousList)
+      if (setList) setList(previousList)
       error(e.message || 'Failed to delete portfolio')
     } finally {
       setDeleting(null)

@@ -154,7 +154,7 @@ function AppContent() {
     stress: s ? <Stress s={s} pid={pid} /> : null,
     alerts: s ? <Alerts s={s} refresh={() => load(pid, true)} /> : null,
     agent: <Agent key={pid} pid={pid} />,
-    portfolios: <Portfolios list={list} pid={pid} setPid={id => { setPid(id); setPage('dashboard') }} onChanged={changed} />,
+    portfolios: <Portfolios list={list} setList={setList} pid={pid} setPid={id => { setPid(id); setPage('dashboard') }} onChanged={changed} />,
     governance: <Governance pid={pid} />,
     admin: <Admin />,
     audit: <Audit />,

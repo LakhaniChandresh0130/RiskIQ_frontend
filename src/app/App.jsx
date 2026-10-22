@@ -48,6 +48,19 @@ function AppContent() {
   const [rates, setRates] = useState({ INR: 1 })
   const [adminFilter, setAdminFilter] = useState('all')
   const [adminList, setAdminList] = useState([])
+  const [serverHealth, setServerHealth] = useState(null)
+
+  const checkServerHealth = () => {
+    api('/health/detailed')
+      .then(res => setServerHealth(res))
+      .catch(err => setServerHealth({ status: 'critical', error: err.message || 'Offline' }))
+  }
+
+  useEffect(() => {
+    checkServerHealth()
+    const timer = setInterval(checkServerHealth, 25000)
+    return () => clearInterval(timer)
+  }, [])
 
   const loadList = (filterAdmin = adminFilter) => {
     const q = isSuperAdmin() && filterAdmin && filterAdmin !== 'all' ? `?admin_id=${encodeURIComponent(filterAdmin)}` : ''
@@ -121,6 +134,44 @@ function AppContent() {
   const changed = id => { cache.clear(); loadList(); id === pid ? load(pid, true) : setPid(id); setPage('dashboard') }
   const nAlerts = s?.alerts?.length ?? 0
   const currencyOptions = CCY_ORDER.map(c => ({ code: c, available: !!rates[c] }))
+
+  const getHealthBadge = () => {
+    // 1. Critical: server reported error, DB error, or network unreachable
+    if (serverHealth?.status === 'critical' || serverHealth?.services?.database === 'error') {
+      return {
+        status: 'critical',
+        label: 'Critical',
+        tooltip: `Server Status: Critical (${serverHealth?.error || 'Database/Service disconnected'}) - Click to refresh`
+      }
+    }
+
+    // 2. Middle / Degraded: one service stopped/issue or synthetic demo data fallback
+    const isServerDegraded = serverHealth?.status === 'degraded'
+    const isSyntheticFeed = s && (s.data_quality?.live === 0 || s.data_source === 'synthetic demo data')
+    const isPartialFeed = s && s.data_quality?.live > 0 && s.data_quality?.proxy > 0
+    const hasServiceIssue = serverHealth?.services && Object.values(serverHealth.services).some(v => v === 'error')
+
+    if (isServerDegraded || hasServiceIssue || isSyntheticFeed || isPartialFeed) {
+      let desc = 'System Degraded'
+      if (isSyntheticFeed) desc = 'Market feed offline (Synthetic demo fallback)'
+      else if (isPartialFeed) desc = `Partial: ${s.data_quality.live} live / ${s.data_quality.proxy} proxy`
+      else if (isServerDegraded) desc = 'Server services degraded'
+
+      return {
+        status: 'warning',
+        label: isSyntheticFeed ? 'Degraded (Proxy)' : 'Degraded',
+        tooltip: `${desc} - Click to refresh`
+      }
+    }
+
+    // 3. All good: Live (light water color)
+    return {
+      status: 'live',
+      label: 'Live',
+      tooltip: `Server Healthy & Connected (All services operational${s?.data_source ? ` • ${s.data_source}` : ''}) - Click to refresh`
+    }
+  }
+  const healthBadge = getHealthBadge()
 
   if (loading) {
     return <div className="auth-container">
@@ -215,9 +266,17 @@ function AppContent() {
             )) : <option value="" disabled>No portfolios available</option>}
           </select></div>
         <div className="meta">
-          {s && <><span className="chip-meta">as of {s.as_of || 'N/A'}</span>
-            <span className={'chip-meta ' + (s.data_quality?.live ? 'live' : 'proxy')}>{s.data_source || 'N/A'}</span>
-            <span className="chip-meta perf">computed in {s.compute_ms || 0} ms</span></>}
+          {s && <span className="chip-meta">as of {s.as_of || 'N/A'}</span>}
+          <span
+            className={`chip-meta health-chip ${healthBadge.status}`}
+            title={healthBadge.tooltip}
+            onClick={checkServerHealth}
+            style={{ cursor: 'pointer' }}
+          >
+            <span className="health-dot" />
+            {healthBadge.label}
+          </span>
+          {s && <span className="chip-meta perf">computed in {s.compute_ms || 0} ms</span>}
           <select className="ccysel" value={curr} onChange={e => pickCcy(e.target.value)} aria-label="Display currency" title="Display currency">
             {currencyOptions.map(opt => <option key={opt.code} value={opt.code} disabled={!opt.available}>{opt.code}</option>)}
           </select>

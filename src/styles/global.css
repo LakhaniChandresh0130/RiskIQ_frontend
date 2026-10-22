@@ -74,6 +74,98 @@ header { position: sticky; top: 0; z-index: 5; display: flex; justify-content: s
 .meta { display: flex; align-items: center; gap: 8px }
 .chip-meta { color: var(--mut); font-size: 11.5px; border: 1px solid var(--line-2); background: var(--panel-2); padding: 3px 10px; border-radius: 999px; }
 .chip-meta.live { color: var(--acc2) } .chip-meta.proxy { color: var(--warn) }
+
+/* Server & Data Stream Health Indicator */
+.chip-meta.health-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 550;
+  transition: all 0.2s ease-in-out;
+  user-select: none;
+}
+.chip-meta.health-chip .health-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+/* 1. All good: Light water color (cyan / water blue) */
+.chip-meta.health-chip.live {
+  color: #22d3ee;
+  background: rgba(34, 211, 238, 0.12);
+  border-color: rgba(34, 211, 238, 0.4);
+}
+.chip-meta.health-chip.live .health-dot {
+  background: #22d3ee;
+  box-shadow: 0 0 8px rgba(34, 211, 238, 0.9);
+  animation: health-pulse-live 2s infinite ease-in-out;
+}
+/* 2. Middle / Degraded: Yellow */
+.chip-meta.health-chip.warning {
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.14);
+  border-color: rgba(251, 191, 36, 0.42);
+}
+.chip-meta.health-chip.warning .health-dot {
+  background: #fbbf24;
+  box-shadow: 0 0 8px rgba(251, 191, 36, 0.9);
+  animation: health-pulse-warn 2s infinite ease-in-out;
+}
+/* 3. Critical: Red */
+.chip-meta.health-chip.critical {
+  color: #f87171;
+  background: rgba(248, 113, 113, 0.14);
+  border-color: rgba(248, 113, 113, 0.45);
+}
+.chip-meta.health-chip.critical .health-dot {
+  background: #f87171;
+  box-shadow: 0 0 8px rgba(248, 113, 113, 0.9);
+  animation: health-pulse-crit 1.4s infinite ease-in-out;
+}
+
+/* Light mode overrides */
+html[data-theme="light"] .chip-meta.health-chip.live {
+  color: #0891b2;
+  background: rgba(8, 145, 178, 0.12);
+  border-color: rgba(8, 145, 178, 0.35);
+}
+html[data-theme="light"] .chip-meta.health-chip.live .health-dot {
+  background: #0891b2;
+  box-shadow: 0 0 6px rgba(8, 145, 178, 0.6);
+}
+html[data-theme="light"] .chip-meta.health-chip.warning {
+  color: #b45309;
+  background: rgba(217, 119, 6, 0.14);
+  border-color: rgba(217, 119, 6, 0.38);
+}
+html[data-theme="light"] .chip-meta.health-chip.warning .health-dot {
+  background: #d97706;
+  box-shadow: 0 0 6px rgba(217, 119, 6, 0.6);
+}
+html[data-theme="light"] .chip-meta.health-chip.critical {
+  color: #b91c1c;
+  background: rgba(220, 38, 38, 0.14);
+  border-color: rgba(220, 38, 38, 0.38);
+}
+html[data-theme="light"] .chip-meta.health-chip.critical .health-dot {
+  background: #dc2626;
+  box-shadow: 0 0 6px rgba(220, 38, 38, 0.6);
+}
+
+@keyframes health-pulse-live {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(0.85); }
+}
+@keyframes health-pulse-warn {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(0.85); }
+}
+@keyframes health-pulse-crit {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(0.8); }
+}
 .bell { position: relative; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel-2); color: var(--mut); cursor: pointer; transition: .15s; }
 .bell:hover { color: var(--ink); border-color: rgba(34, 211, 238, .4) }
 .bell svg { width: 17px; height: 17px }

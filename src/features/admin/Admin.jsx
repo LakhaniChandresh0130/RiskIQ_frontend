@@ -177,8 +177,8 @@ export default function Admin() {
                               onChange={(e) => handleRoleChange(m.id, e.target.value)}
                               disabled={isLastSuperAdmin}
                               style={{
-                                background: '#0b1424',
-                                color: '#e2e8f0',
+                                background: 'var(--panel-2)',
+                                color: 'var(--ink)',
                                 border: '1px solid var(--line)',
                                 padding: '4px 8px',
                                 borderRadius: '6px',
@@ -231,7 +231,7 @@ export default function Admin() {
                             </button>
                           </div>
                         ) : (
-                          <span style={{ fontSize: '12px', color: '#888' }}>
+                          <span style={{ fontSize: '12px', color: 'var(--mut)' }}>
                             {m.user_id === user?.sub ? 'Self' : 'Approved'}
                           </span>
                         )}

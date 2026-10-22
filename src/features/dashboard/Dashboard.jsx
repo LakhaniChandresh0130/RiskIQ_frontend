@@ -7,9 +7,9 @@ import CountUp from '../../components/CountUp.jsx'
 import ErrorBoundary from '../../components/ErrorBoundary.jsx'
 import { SkeletonCard, InlineLoader } from '../../components/Loader.jsx'
 import { cr, pc, int, ax, ccy } from '../../lib/format.js'
+import { chartTip as tip } from '../../contexts/ThemeContext.jsx'
 
 const RiskField3D = lazy(() => import('../../components/RiskField3D.jsx'))
-const tip = { contentStyle: { background: '#0b1322', border: '1px solid rgba(120,160,200,.2)', borderRadius: 10, color: '#e6edf7', fontSize: 12 } }
 
 const POS_COLS = [
   { key: 'symbol', label: 'Symbol', render: r => <b>{r.symbol}</b> },
@@ -63,7 +63,7 @@ export default function Dashboard({ s }) {
               <Area type="monotone" dataKey="var" stroke="#22d3ee" strokeWidth={2} fill="url(#varFill)" dot={false} />
             </AreaChart>
           ) : (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#8598b3' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--mut)' }}>
               <InlineLoader text="Loading chart data..." />
             </div>
           )}

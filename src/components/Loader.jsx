@@ -66,7 +66,7 @@ export function PageLoader({ message = 'Loading...' }) {
       <motion.p
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        style={{ color: '#8598b3', fontSize: '14px' }}
+        style={{ color: 'var(--mut)', fontSize: '14px' }}
       >
         {message}
       </motion.p>
@@ -76,7 +76,7 @@ export function PageLoader({ message = 'Loading...' }) {
 
 export function InlineLoader({ text = 'Loading...' }) {
   return (
-    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: '#8598b3' }}>
+    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: 'var(--mut)' }}>
       <Spinner size="sm" />
       <span>{text}</span>
     </div>

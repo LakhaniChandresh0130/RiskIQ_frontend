@@ -6,8 +6,7 @@ import { Card } from '../../components/ui.jsx'
 import CountUp from '../../components/CountUp.jsx'
 import { api } from '../../lib/api.js'
 import { cr, pc } from '../../lib/format.js'
-
-const tip = { contentStyle: { background: '#0b1322', border: '1px solid rgba(120,160,200,.2)', borderRadius: 10, color: '#e6edf7', fontSize: 12 } }
+import { chartTip as tip } from '../../contexts/ThemeContext.jsx'
 const FIELDS = [
   ['eq_in', 'India equities', -40, 40, '%'], ['eq_gl', 'Global equities', -40, 40, '%'],
   ['fx', 'USD/INR', -20, 20, '%'], ['dy', 'Rates shock', -3, 3, ' pp'], ['comm', 'Commodities', -50, 50, '%'],
@@ -37,7 +36,7 @@ export default function Stress({ s, pid }) {
             </Bar>
           </BarChart>
         ) : (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#8598b3' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--mut)' }}>
             Loading data...
           </div>
         )}

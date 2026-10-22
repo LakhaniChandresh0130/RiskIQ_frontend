@@ -4,9 +4,9 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGri
 import { Card } from '../../components/ui.jsx'
 import DataTable from '../../components/DataTable.jsx'
 import { cr, pc } from '../../lib/format.js'
+import { chartTip as tip } from '../../contexts/ThemeContext.jsx'
 
 const LEVELS = [['position', 'Position'], ['sector', 'Sector'], ['asset_class', 'Asset class'], ['currency', 'Currency']]
-const tip = { contentStyle: { background: '#0b1322', border: '1px solid rgba(120,160,200,.2)', borderRadius: 10, color: '#e6edf7', fontSize: 12 } }
 const COLS = [
   { key: 'key', label: 'Driver', render: r => <b>{r.key}</b> },
   { key: 'var', label: 'Component VaR', n: true, render: r => cr(r.var) },
@@ -32,7 +32,7 @@ export default function Drivers({ s }) {
             </Bar>
           </BarChart>
         ) : (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#8598b3' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--mut)' }}>
             Loading data...
           </div>
         )}

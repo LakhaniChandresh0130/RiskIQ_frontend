@@ -1,10 +1,12 @@
 import { useAuth } from '../../contexts/AuthContext.jsx'
+import ThemeToggle from '../../components/ThemeToggle.jsx'
 
 export default function PendingApproval() {
   const { user, logout } = useAuth()
 
   return (
     <div className="auth-container">
+      <ThemeToggle className="theme-fab" />
       <div className="aurora"><i /><i /><i /><div className="gridfx" /></div>
       <div className="auth-card">
         <div className="brand"><span className="logo" /><div><b>RiskIQ</b><small>quant risk platform</small></div></div>
@@ -26,7 +28,7 @@ export default function PendingApproval() {
             </ul>
           </div>
 
-          <div style={{ fontSize: '14px', color: '#666', marginBottom: '24px' }}>
+          <div style={{ fontSize: '14px', color: 'var(--mut)', marginBottom: '24px' }}>
             <strong>Your email:</strong> {user?.email || 'Not provided'}<br/>
             <strong>Organization:</strong> {user?.org || 'Pending'}
           </div>
@@ -40,7 +42,7 @@ export default function PendingApproval() {
             </button>
           </div>
 
-          <p style={{ marginTop: '24px', fontSize: '12px', color: '#999' }}>
+          <p style={{ marginTop: '24px', fontSize: '12px', color: 'var(--mut)' }}>
             If you believe this is an error, please contact your organization's administrator.
           </p>
         </div>

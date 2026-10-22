@@ -20,6 +20,7 @@ import Auth from '../features/auth/Auth.jsx'
 import PendingApproval from '../features/auth/PendingApproval.jsx'
 import ErrorBoundary from '../components/ErrorBoundary.jsx'
 import { ErrorDisplay } from '../components/ErrorDisplay.jsx'
+import ThemeToggle from '../components/ThemeToggle.jsx'
 
 const NAV = [
   ['dashboard', 'Dashboard', 'M3 3h7v7H3zM14 3h7v4h-7zM14 11h7v10h-7zM3 14h7v7H3z'],
@@ -123,6 +124,7 @@ function AppContent() {
 
   if (loading) {
     return <div className="auth-container">
+      <ThemeToggle className="theme-fab" />
       <div className="aurora"><i /><i /><i /><div className="gridfx" /></div>
       <div className="auth-card">
         <div className="skels">{[...Array(3)].map((_, i) => <div key={i} className="skel" style={{ animationDelay: i * .12 + 's' }} />)}</div>
@@ -219,6 +221,7 @@ function AppContent() {
           <select className="ccysel" value={curr} onChange={e => pickCcy(e.target.value)} aria-label="Display currency" title="Display currency">
             {currencyOptions.map(opt => <option key={opt.code} value={opt.code} disabled={!opt.available}>{opt.code}</option>)}
           </select>
+          <ThemeToggle />
           <button className={'bell' + (nAlerts ? ' ring' : '')} onClick={() => setPage('alerts')} title="Open alerts">
             <Icon d="M12 3a6 6 0 00-6 6v4l-2 3h16l-2-3V9a6 6 0 00-6-6zM10 19a2 2 0 004 0" />{nAlerts > 0 && <span className="badge">{nAlerts}</span>}
           </button>

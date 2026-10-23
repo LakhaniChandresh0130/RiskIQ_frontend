@@ -1,6 +1,6 @@
 // App shell: aurora backdrop, sidebar nav with a sliding active marker, topbar with
 // global portfolio selector, and animated page transitions. Snapshot data is cached per portfolio.
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { api } from '../lib/api.js'
 import { setCcy } from '../lib/format.js'
@@ -49,6 +49,8 @@ function AppContent() {
   const [adminFilter, setAdminFilter] = useState('all')
   const [adminList, setAdminList] = useState([])
   const [serverHealth, setServerHealth] = useState(null)
+  const [isRefreshing, setIsRefreshing] = useState(false)
+  const lastFetchTimeRef = useRef(Date.now())
 
   const checkServerHealth = () => {
     api('/health/detailed')
@@ -89,23 +91,68 @@ function AppContent() {
     }
   }
 
-  const load = (id, force) => {
-    setErr('')
+  const load = (id, force, silent = false) => {
     if (!id || id === 'null') {
       setS(null)
       return
     }
     if (!force && cache.has(id)) return setS(cache.get(id))
-    setS(null)
-    api(`/portfolios/${id}/snapshot`).then(d => { cache.set(id, d); setS(d) })
+    if (!silent) {
+      setErr('')
+      setS(null)
+    } else {
+      setIsRefreshing(true)
+    }
+    const q = force ? '?refresh=1' : ''
+    api(`/portfolios/${id}/snapshot${q}`).then(d => {
+      cache.set(id, d)
+      setS(d)
+      setErr('')
+      lastFetchTimeRef.current = Date.now()
+    })
       .catch(e => {
-        setErr(e.message || 'Failed to load portfolio data.')
+        if (!silent) setErr(e.message || 'Failed to load portfolio data.')
+      })
+      .finally(() => {
+        if (silent) setIsRefreshing(false)
       })
   }
 
   const retryLoad = () => {
     if (pid && pid !== 'null') load(pid, true)
   }
+
+  // Automatic refresh interval: rerender / get updated data every 10 minutes (600,000 ms)
+  // Also auto-refreshes when user returns to tab after 15+ minutes away
+  useEffect(() => {
+    if (!user || pendingApproval || !pid || pid === 'null') return
+
+    const TEN_MINUTES_MS = 10 * 60 * 1000
+
+    const timer = setInterval(() => {
+      cache.delete(pid)
+      load(pid, true, true)
+      loadList()
+      api('/fx').then(r => { setCcy(curr, r[curr] ?? 1); setRates(r) }).catch(() => {})
+    }, TEN_MINUTES_MS)
+
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        const elapsed = Date.now() - lastFetchTimeRef.current
+        if (elapsed >= TEN_MINUTES_MS) {
+          cache.delete(pid)
+          load(pid, true, true)
+          loadList()
+        }
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibility)
+    return () => {
+      clearInterval(timer)
+      document.removeEventListener('visibilitychange', handleVisibility)
+    }
+  }, [pid, user?.sub, pendingApproval, curr])
   useEffect(() => {
     if (!user || pendingApproval) return
     cache.clear()
@@ -277,6 +324,20 @@ function AppContent() {
             {healthBadge.label}
           </span>
           {s && <span className="chip-meta perf">computed in {s.compute_ms || 0} ms</span>}
+          {isRefreshing ? (
+            <span className="chip-meta" style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', color: '#38bdf8' }}>
+              <span style={{ display: 'inline-block', animation: 'spin 1s linear infinite' }}>⟳</span> Updating…
+            </span>
+          ) : (
+            <button
+              className="chip-meta"
+              onClick={() => { if (pid) { cache.delete(pid); load(pid, true, true); } }}
+              title="Auto-refreshes every 10 minutes. Click to refresh now."
+              style={{ cursor: 'pointer', background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', padding: '2px 8px', borderRadius: '4px', fontSize: '11px', color: 'inherit' }}
+            >
+              ↻ 10m sync
+            </button>
+          )}
           <select className="ccysel" value={curr} onChange={e => pickCcy(e.target.value)} aria-label="Display currency" title="Display currency">
             {currencyOptions.map(opt => <option key={opt.code} value={opt.code} disabled={!opt.available}>{opt.code}</option>)}
           </select>
